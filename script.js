@@ -203,6 +203,20 @@ if (esIphone && !yaInstalada) {
   btnInstalar.hidden = false;
 }
 
+// ---------- EMOJIS ANIMADOS DE FONDO ----------
+const contenedorFondo = document.querySelector('.fondo-emojis');
+const EMOJIS_FONDO = ['😂', '😍', '🥳', '😢', '😜', '😅', '🤩', '🎉', '😎', '🤪', '😋', '👍', '❤️'];
+
+for (let i = 0; i < 22; i++) {
+  const s = document.createElement('span');
+  s.textContent = EMOJIS_FONDO[Math.floor(Math.random() * EMOJIS_FONDO.length)];
+  s.style.left = (Math.random() * 100) + '%';
+  s.style.fontSize = (28 + Math.random() * 36) + 'px';
+  s.style.animationDuration = (8 + Math.random() * 8) + 's';
+  s.style.animationDelay = (-Math.random() * 16) + 's'; // negativo: ya empiezan en movimiento
+  contenedorFondo.appendChild(s);
+}
+
 // Arranque
 renderizarLista();
 dibujar();
