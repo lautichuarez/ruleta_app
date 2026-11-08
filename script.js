@@ -52,9 +52,17 @@ function dibujar() {
     ctx.translate(centro, centro);
     ctx.rotate(inicio + porcion / 2);
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 30px system-ui, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(opcion, radio - 28, 10);
+
+    // Tamaño de letra que se ajusta solo para que quepa en el sector
+    let tamano = 46;
+    ctx.font = `bold ${tamano}px system-ui, sans-serif`;
+    while (ctx.measureText(opcion).width > radio * 0.6 && tamano > 20) {
+      tamano -= 2;
+      ctx.font = `bold ${tamano}px system-ui, sans-serif`;
+    }
+
+    ctx.fillText(opcion, radio - 24, 16);
     ctx.restore();
   });
 }
