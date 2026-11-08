@@ -1,6 +1,6 @@
 {
   "name": "¿Qué hacemos hoy?",
-  "short_name": "Ruleta",
+  "short_name": "¿Qué hacemos hoy?",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#5f27cd",
