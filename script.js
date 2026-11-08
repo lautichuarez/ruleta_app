@@ -52,9 +52,9 @@ function dibujar() {
     ctx.translate(centro, centro);
     ctx.rotate(inicio + porcion / 2);
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 16px sans-serif';
+    ctx.font = 'bold 30px system-ui, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(opcion, radio - 14, 6);
+    ctx.fillText(opcion, radio - 28, 10);
     ctx.restore();
   });
 }
