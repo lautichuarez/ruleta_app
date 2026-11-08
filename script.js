@@ -169,6 +169,40 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 
+// ---------- BOTÓN DESCARGAR / INSTALAR ----------
+const btnInstalar = document.getElementById('btnInstalar');
+let eventoInstalar = null;
+
+// Android y computadoras (Chrome y Edge): el navegador avisa cuando la app se puede instalar
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  eventoInstalar = e;
+  btnInstalar.hidden = false;
+});
+
+btnInstalar.addEventListener('click', async () => {
+  if (eventoInstalar) {
+    eventoInstalar.prompt();
+    await eventoInstalar.userChoice;
+    eventoInstalar = null;
+    btnInstalar.hidden = true;
+  } else {
+    // iPhone no permite instalación automática: mostramos instrucciones
+    alert('En iPhone: toca el botón Compartir (cuadrado con flecha) y elige "Agregar a pantalla de inicio".');
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  btnInstalar.hidden = true;
+});
+
+// En iPhone mostramos el botón con instrucciones (si la app no está ya instalada)
+const esIphone = /iPhone|iPad/.test(navigator.userAgent);
+const yaInstalada = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+if (esIphone && !yaInstalada) {
+  btnInstalar.hidden = false;
+}
+
 // Arranque
 renderizarLista();
 dibujar();
