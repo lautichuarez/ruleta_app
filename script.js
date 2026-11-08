@@ -227,4 +227,4 @@ const btnInstalar = document.getElementById('btnInstalar');
 let eventoInstalar = null;
 
 // Android y computadoras (Chrome y Edge): el navegador avisa cuando la app se puede instalar
-wind
+window
