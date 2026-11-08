@@ -2,30 +2,38 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>¿Qué hacemos hoy?</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#5f27cd">
+  <meta name="theme-color" content="#2d1b69">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
-    <h1>¿Qué hacemos hoy?</h1>
+    <header class="encabezado">
+      <img src="icon-192.png" alt="" class="logo">
+      <h1>¿Qué hacemos hoy?</h1>
+    </header>
 
-    <div class="ruleta-wrapper">
-      <div class="puntero"></div>
-      <canvas id="ruleta" width="300" height="300"></canvas>
-    </div>
+    <section class="tarjeta ruleta-seccion">
+      <div class="ruleta-wrapper">
+        <div class="puntero"></div>
+        <canvas id="ruleta" width="600" height="600"></canvas>
+      </div>
+      <button id="btnGirar" class="btn-girar">¡Girar!</button>
+      <p id="resultado" class="resultado"></p>
+    </section>
 
-    <button id="btnGirar" class="btn-girar">¡Girar!</button>
-    <p id="resultado" class="resultado"></p>
-
-    <div class="agregar">
-      <input id="nuevaOpcion" type="text" placeholder="Nueva opción..." maxlength="25">
-      <button id="btnAgregar">Agregar</button>
-    </div>
-
-    <ul id="lista"></ul>
+    <section class="tarjeta">
+      <h2>Opciones</h2>
+      <div class="agregar">
+        <input id="nuevaOpcion" type="text" placeholder="Escribe una opción..." maxlength="25">
+        <button id="btnAgregar" class="btn-agregar">+</button>
+      </div>
+      <ul id="lista"></ul>
+    </section>
   </main>
 
   <script src="script.js"></script>
