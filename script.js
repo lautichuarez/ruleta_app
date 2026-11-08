@@ -18,11 +18,10 @@ function guardar() {
   localStorage.setItem('opciones', JSON.stringify(opciones));
 }
 
-// ---------- SONIDO ----------
+// ---------- SONIDOS ----------
 let audioCtx = null;
 
-// El navegador exige que el audio se active con un toque del usuario,
-// por eso se crea la primera vez que se gira la ruleta.
+// El navegador exige que el audio se active con un toque del usuario
 function obtenerAudio() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -31,24 +30,26 @@ function obtenerAudio() {
   return audioCtx;
 }
 
-// Un "tic" corto, como el de una ruleta de feria
+// Tic corto que suena al pasar por cada opción
 function tic() {
-  const c = obtenerAudio();
-  const osc = c.createOscillator();
-  const vol = c.createGain();
-  osc.type = 'square';
-  osc.frequency.value = 900;
-  vol.gain.setValueAtTime(0.15, c.currentTime);
-  vol.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.05);
-  osc.connect(vol);
-  vol.connect(c.destination);
-  osc.start();
-  osc.stop(c.currentTime + 0.06);
+  try {
+    const c = obtenerAudio();
+    const osc = c.createOscillator();
+    const vol = c.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 900;
+    vol.gain.setValueAtTime(0.15, c.currentTime);
+    vol.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.05);
+    osc.connect(vol);
+    vol.connect(c.destination);
+    osc.start();
+    osc.stop(c.currentTime + 0.06);
+  } catch (e) {
+    // Si el audio no está disponible, la app sigue funcionando
+  }
 }
 
-// Melodía corta de celebración al mostrar el ganador
-function celebrar() {
-  // Sonido de celebración al mostrar el ganador (archivo task_complete.wav)
+// Sonido de celebración al mostrar el ganador (archivo task_complete.wav)
 const sonidoGanador = new Audio('task_complete.wav');
 sonidoGanador.preload = 'auto';
 
@@ -226,49 +227,4 @@ const btnInstalar = document.getElementById('btnInstalar');
 let eventoInstalar = null;
 
 // Android y computadoras (Chrome y Edge): el navegador avisa cuando la app se puede instalar
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  eventoInstalar = e;
-  btnInstalar.hidden = false;
-});
-
-btnInstalar.addEventListener('click', async () => {
-  if (eventoInstalar) {
-    eventoInstalar.prompt();
-    await eventoInstalar.userChoice;
-    eventoInstalar = null;
-    btnInstalar.hidden = true;
-  } else {
-    // iPhone no permite instalación automática: mostramos instrucciones
-    alert('En iPhone: toca el botón Compartir (cuadrado con flecha) y elige "Agregar a pantalla de inicio".');
-  }
-});
-
-window.addEventListener('appinstalled', () => {
-  btnInstalar.hidden = true;
-});
-
-// En iPhone mostramos el botón con instrucciones (si la app no está ya instalada)
-const esIphone = /iPhone|iPad/.test(navigator.userAgent);
-const yaInstalada = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-if (esIphone && !yaInstalada) {
-  btnInstalar.hidden = false;
-}
-
-// ---------- EMOJIS ANIMADOS DE FONDO ----------
-const contenedorFondo = document.querySelector('.fondo-emojis');
-const EMOJIS_FONDO = ['😂', '😍', '🥳', '😢', '😜', '😅', '🤩', '🎉', '😎', '🤪', '😋', '👍', '❤️'];
-
-for (let i = 0; i < 22; i++) {
-  const s = document.createElement('span');
-  s.textContent = EMOJIS_FONDO[Math.floor(Math.random() * EMOJIS_FONDO.length)];
-  s.style.left = (Math.random() * 100) + '%';
-  s.style.fontSize = (28 + Math.random() * 36) + 'px';
-  s.style.animationDuration = (8 + Math.random() * 8) + 's';
-  s.style.animationDelay = (-Math.random() * 16) + 's'; // negativo: ya empiezan en movimiento
-  contenedorFondo.appendChild(s);
-}
-
-// Arranque
-renderizarLista();
-dibujar();
+wind
