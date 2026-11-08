@@ -7,18 +7,85 @@ const lista = document.getElementById('lista');
 const resultado = document.getElementById('resultado');
 const btnInstalar = document.getElementById('btnInstalar');
 const contenedorFondo = document.querySelector('.fondo-emojis');
+const selectorLista = document.getElementById('selectorLista');
+const btnNuevaLista = document.getElementById('btnNuevaLista');
+const btnBorrarLista = document.getElementById('btnBorrarLista');
 
 const COLORES = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1',
                  '#ff9ff3', '#54a0ff', '#5f27cd', '#ff9f43'];
 
-// Cargar opciones guardadas o usar ejemplos
-let opciones = JSON.parse(localStorage.getItem('opciones')) || ['Pizza', 'Cine', 'Parque', 'Sushi'];
+// ---------- LISTAS ----------
+// Cada lista tiene un nombre y sus opciones. Si ya tenías opciones guardadas
+// de la versión anterior, se pasan a una lista llamada "General".
+let listas = JSON.parse(localStorage.getItem('listas'));
+if (!listas) {
+  const antiguas = JSON.parse(localStorage.getItem('opciones'));
+  listas = antiguas
+    ? { 'General': antiguas }
+    : {
+        'Comida': ['Pizza', 'Sushi', 'Tacos', 'Hamburguesa'],
+        'Películas': ['Acción', 'Comedia', 'Terror', 'Animada'],
+        'Planes': ['Cine', 'Parque', 'Café', 'Caminata']
+      };
+}
+
+let listaActual = localStorage.getItem('listaActual');
+if (!listas[listaActual]) listaActual = Object.keys(listas)[0];
+
+// "opciones" apunta a la lista que se está usando
+let opciones = listas[listaActual];
 let angulo = 0;   // rotación actual de la ruleta (en radianes)
 let girando = false;
 let eventoInstalar = null;
 
 function guardar() {
-  localStorage.setItem('opciones', JSON.stringify(opciones));
+  localStorage.setItem('listas', JSON.stringify(listas));
+  localStorage.setItem('listaActual', listaActual);
+}
+
+function renderizarSelector() {
+  selectorLista.innerHTML = '';
+  Object.keys(listas).forEach(nombre => {
+    const op = document.createElement('option');
+    op.value = nombre;
+    op.textContent = nombre;
+    selectorLista.appendChild(op);
+  });
+  selectorLista.value = listaActual;
+}
+
+function cambiarLista(nombre) {
+  if (girando) return;
+  listaActual = nombre;
+  opciones = listas[nombre];
+  guardar();
+  resultado.textContent = '';
+  renderizarSelector();
+  renderizarLista();
+  dibujar();
+}
+
+function nuevaLista() {
+  if (girando) return;
+  const nombre = (prompt('Nombre de la nueva lista:') || '').trim();
+  if (nombre === '') return;
+  if (listas[nombre]) {
+    alert('Ya existe una lista con ese nombre.');
+    return;
+  }
+  listas[nombre] = [];
+  cambiarLista(nombre);
+}
+
+function borrarLista() {
+  if (girando) return;
+  if (Object.keys(listas).length <= 1) {
+    alert('Debe quedar al menos una lista.');
+    return;
+  }
+  if (!confirm(`¿Borrar la lista "${listaActual}"?`)) return;
+  delete listas[listaActual];
+  cambiarLista(Object.keys(listas)[0]);
 }
 
 // ---------- SONIDOS ----------
@@ -173,6 +240,10 @@ function mostrarGanador() {
   resultado.textContent = '🎉 ' + obtenerGanador() + ' 🎉';
   resultado.classList.add('mostrar');
   celebrar();
+  // Vibración: funciona en Android; en iPhone el navegador la ignora
+  if ('vibrate' in navigator) {
+    navigator.vibrate([200, 100, 200]);
+  }
 }
 
 // ---------- GESTIONAR LA LISTA ----------
@@ -219,6 +290,9 @@ btnAgregar.addEventListener('click', agregarOpcion);
 inputNueva.addEventListener('keydown', e => {
   if (e.key === 'Enter') agregarOpcion();
 });
+selectorLista.addEventListener('change', () => cambiarLista(selectorLista.value));
+btnNuevaLista.addEventListener('click', nuevaLista);
+btnBorrarLista.addEventListener('click', borrarLista);
 
 // Registrar el service worker (necesario para instalar la app)
 if ('serviceWorker' in navigator) {
@@ -270,5 +344,6 @@ for (let i = 0; i < 22; i++) {
 }
 
 // Arranque
+renderizarSelector();
 renderizarLista();
 dibujar();
