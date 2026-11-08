@@ -48,21 +48,14 @@ function tic() {
 
 // Melodía corta de celebración al mostrar el ganador
 function celebrar() {
-  const c = obtenerAudio();
-  const notas = [523, 659, 784, 1047]; // do, mi, sol, do agudo
-  notas.forEach((frecuencia, i) => {
-    const inicio = c.currentTime + i * 0.12;
-    const osc = c.createOscillator();
-    const vol = c.createGain();
-    osc.type = 'triangle';
-    osc.frequency.value = frecuencia;
-    vol.gain.setValueAtTime(0.0001, inicio);
-    vol.gain.exponentialRampToValueAtTime(0.25, inicio + 0.02);
-    vol.gain.exponentialRampToValueAtTime(0.001, inicio + 0.3);
-    osc.connect(vol);
-    vol.connect(c.destination);
-    osc.start(inicio);
-    osc.stop(inicio + 0.3);
+  // Sonido de celebración al mostrar el ganador (archivo task_complete.wav)
+const sonidoGanador = new Audio('task_complete.wav');
+sonidoGanador.preload = 'auto';
+
+function celebrar() {
+  sonidoGanador.currentTime = 0;
+  sonidoGanador.play().catch(() => {
+    // Si el navegador bloquea el audio, la app sigue funcionando sin sonido
   });
 }
 
