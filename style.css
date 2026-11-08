@@ -274,3 +274,30 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   h1 { font-size: 1.15rem; }
   .btn-girar { font-size: 1.1rem; }
 }
+/* ---------- Selector de listas ---------- */
+.barra-listas {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.barra-listas select {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  background: var(--blanco);
+  color: #222;
+}
+
+.btn-lista {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.1rem;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.25);
+  color: var(--blanco);
+}
