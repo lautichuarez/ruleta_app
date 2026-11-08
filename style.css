@@ -21,12 +21,37 @@ body {
 }
 
 main {
+  position: relative;
+  z-index: 1;
   max-width: 480px;
   margin: 0 auto;
   padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 24px);
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* ---------- Emojis de fondo ---------- */
+.fondo-emojis {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.fondo-emojis img {
+  position: absolute;
+  width: 90px;
+  height: auto;
+  opacity: 0.35;
+  animation: flotar 9s ease-in-out infinite;
+  animation-delay: var(--d);
+}
+
+@keyframes flotar {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50%      { transform: translateY(-22px) rotate(8deg); }
 }
 
 /* ---------- Encabezado ---------- */
@@ -132,6 +157,22 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   transform: translateY(4px);
 }
 
+/* ---------- Botón descargar app ---------- */
+.btn-instalar {
+  width: 100%;
+  min-height: 52px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 14px;
+  background: var(--blanco);
+  color: var(--morado);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.btn-instalar[hidden] {
+  display: none;
+}
+
 /* ---------- Resultado ---------- */
 .resultado {
   min-height: 48px;
@@ -228,19 +269,4 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (max-width: 360px) {
   h1 { font-size: 1.15rem; }
   .btn-girar { font-size: 1.1rem; }
-}
-
-.btn-instalar {
-  width: 100%;
-  min-height: 52px;
-  font-size: 1.05rem;
-  font-weight: 800;
-  border-radius: 14px;
-  background: var(--blanco);
-  color: var(--morado);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-}
-
-.btn-instalar[hidden] {
-  display: none;
 }
