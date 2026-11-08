@@ -18,6 +18,54 @@ function guardar() {
   localStorage.setItem('opciones', JSON.stringify(opciones));
 }
 
+// ---------- SONIDO ----------
+let audioCtx = null;
+
+// El navegador exige que el audio se active con un toque del usuario,
+// por eso se crea la primera vez que se gira la ruleta.
+function obtenerAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// Un "tic" corto, como el de una ruleta de feria
+function tic() {
+  const c = obtenerAudio();
+  const osc = c.createOscillator();
+  const vol = c.createGain();
+  osc.type = 'square';
+  osc.frequency.value = 900;
+  vol.gain.setValueAtTime(0.15, c.currentTime);
+  vol.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.05);
+  osc.connect(vol);
+  vol.connect(c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.06);
+}
+
+// Melodía corta de celebración al mostrar el ganador
+function celebrar() {
+  const c = obtenerAudio();
+  const notas = [523, 659, 784, 1047]; // do, mi, sol, do agudo
+  notas.forEach((frecuencia, i) => {
+    const inicio = c.currentTime + i * 0.12;
+    const osc = c.createOscillator();
+    const vol = c.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = frecuencia;
+    vol.gain.setValueAtTime(0.0001, inicio);
+    vol.gain.exponentialRampToValueAtTime(0.25, inicio + 0.02);
+    vol.gain.exponentialRampToValueAtTime(0.001, inicio + 0.3);
+    osc.connect(vol);
+    vol.connect(c.destination);
+    osc.start(inicio);
+    osc.stop(inicio + 0.3);
+  });
+}
+
 // ---------- DIBUJAR LA RULETA ----------
 function dibujar() {
   const tamaño = canvas.width;
@@ -95,11 +143,21 @@ function girar() {
   const duracion = 4000;                              // milisegundos
   const t0 = performance.now();
 
+  const porcion = (2 * Math.PI) / opciones.length;
+  let ultimoSector = Math.floor(angulo / porcion);
+
   function frame(ahora) {
     const progreso = Math.min((ahora - t0) / duracion, 1);
     const suavizado = 1 - Math.pow(1 - progreso, 3);  // desacelera al final
     angulo = inicio + (destino - inicio) * suavizado;
     dibujar();
+
+    // Tic cada vez que el puntero cruza una opción
+    const sectorActual = Math.floor(angulo / porcion);
+    if (sectorActual !== ultimoSector) {
+      tic();
+      ultimoSector = sectorActual;
+    }
 
     if (progreso < 1) {
       requestAnimationFrame(frame);
@@ -117,6 +175,7 @@ function girar() {
 function mostrarGanador() {
   resultado.textContent = '🎉 ' + obtenerGanador() + ' 🎉';
   resultado.classList.add('mostrar');
+  celebrar();
 }
 
 // ---------- GESTIONAR LA LISTA ----------
