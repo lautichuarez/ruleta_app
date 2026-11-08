@@ -5,6 +5,8 @@ const btnAgregar = document.getElementById('btnAgregar');
 const btnGirar = document.getElementById('btnGirar');
 const lista = document.getElementById('lista');
 const resultado = document.getElementById('resultado');
+const btnInstalar = document.getElementById('btnInstalar');
+const contenedorFondo = document.querySelector('.fondo-emojis');
 
 const COLORES = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1',
                  '#ff9ff3', '#54a0ff', '#5f27cd', '#ff9f43'];
@@ -13,6 +15,7 @@ const COLORES = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1',
 let opciones = JSON.parse(localStorage.getItem('opciones')) || ['Pizza', 'Cine', 'Parque', 'Sushi'];
 let angulo = 0;   // rotación actual de la ruleta (en radianes)
 let girando = false;
+let eventoInstalar = null;
 
 function guardar() {
   localStorage.setItem('opciones', JSON.stringify(opciones));
@@ -223,8 +226,49 @@ if ('serviceWorker' in navigator) {
 }
 
 // ---------- BOTÓN DESCARGAR / INSTALAR ----------
-const btnInstalar = document.getElementById('btnInstalar');
-let eventoInstalar = null;
-
 // Android y computadoras (Chrome y Edge): el navegador avisa cuando la app se puede instalar
-window
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  eventoInstalar = e;
+  btnInstalar.hidden = false;
+});
+
+btnInstalar.addEventListener('click', async () => {
+  if (eventoInstalar) {
+    eventoInstalar.prompt();
+    await eventoInstalar.userChoice;
+    eventoInstalar = null;
+    btnInstalar.hidden = true;
+  } else {
+    // iPhone no permite instalación automática: mostramos instrucciones
+    alert('En iPhone: toca el botón Compartir (cuadrado con flecha) y elige "Agregar a pantalla de inicio".');
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  btnInstalar.hidden = true;
+});
+
+// En iPhone mostramos el botón con instrucciones (si la app no está ya instalada)
+const esIphone = /iPhone|iPad/.test(navigator.userAgent);
+const yaInstalada = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+if (esIphone && !yaInstalada) {
+  btnInstalar.hidden = false;
+}
+
+// ---------- EMOJIS ANIMADOS DE FONDO ----------
+const EMOJIS_FONDO = ['😂', '😍', '🥳', '😢', '😜', '😅', '🤩', '🎉', '😎', '🤪', '😋', '👍', '❤️'];
+
+for (let i = 0; i < 22; i++) {
+  const s = document.createElement('span');
+  s.textContent = EMOJIS_FONDO[Math.floor(Math.random() * EMOJIS_FONDO.length)];
+  s.style.left = (Math.random() * 100) + '%';
+  s.style.fontSize = (28 + Math.random() * 36) + 'px';
+  s.style.animationDuration = (8 + Math.random() * 8) + 's';
+  s.style.animationDelay = (-Math.random() * 16) + 's'; // negativo: ya empiezan en movimiento
+  contenedorFondo.appendChild(s);
+}
+
+// Arranque
+renderizarLista();
+dibujar();
