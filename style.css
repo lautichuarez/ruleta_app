@@ -229,3 +229,18 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   h1 { font-size: 1.15rem; }
   .btn-girar { font-size: 1.1rem; }
 }
+
+.btn-instalar {
+  width: 100%;
+  min-height: 52px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 14px;
+  background: var(--blanco);
+  color: var(--morado);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.btn-instalar[hidden] {
+  display: none;
+}
