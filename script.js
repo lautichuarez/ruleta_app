@@ -16,8 +16,12 @@ const btnCompartir = document.getElementById('btnCompartir');
 const confetiCanvas = document.getElementById('confeti');
 const cctx = confetiCanvas.getContext('2d');
 const pantallaInicio = document.getElementById('pantallaInicio');
+const menuPrincipal = document.getElementById('menuPrincipal');
+const menuDesafio = document.getElementById('menuDesafio');
 const btnJugar = document.getElementById('btnJugar');
 const btnModoGrupo = document.getElementById('btnModoGrupo');
+const btnDesafio = document.getElementById('btnDesafio');
+const btnVolverMenu = document.getElementById('btnVolverMenu');
 const btnCompartirApp = document.getElementById('btnCompartirApp');
 
 const COLORES = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1',
@@ -25,6 +29,21 @@ const COLORES = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1',
 
 const URL_APP = 'https://lautichuarez.github.io/ruleta_app/';
 const TEXTO_APP = '🎡 Mira esta app para decidir qué hacemos hoy. ¡Gira la ruleta!';
+
+// Plantillas del Modo Desafío: se crean como listas la primera vez que las usas
+const PLANTILLAS = {
+  'Qué comemos hoy': {
+    opciones: ['Pizza', 'Hamburguesa', 'Ensalada', 'Sushi', 'Milanesas', 'Pasta']
+  },
+  'Quién paga': {
+    opciones: [],
+    aviso: 'Escribe los nombres de tus amigos'
+  },
+  'Previa': {
+    opciones: ['Verdad o reto', 'Toma un sorbo', 'Haz 10 sentadillas',
+               'Que tome el de tu derecha', 'Baila sin música', 'Salvado']
+  }
+};
 
 // ---------- LISTAS ----------
 // Cada lista tiene un nombre y sus opciones. Si ya tenías opciones guardadas
@@ -104,6 +123,8 @@ function borrarLista() {
 
 // ---------- MENÚ DE INICIO ----------
 function mostrarMenu() {
+  menuDesafio.hidden = true;
+  menuPrincipal.hidden = false;
   pantallaInicio.classList.remove('salir');
   pantallaInicio.hidden = false;
 }
@@ -126,6 +147,33 @@ btnModoGrupo.addEventListener('click', () => {
   if (opciones.length === 0) {
     resultado.textContent = 'Escribe los nombres del grupo';
   }
+});
+
+// Modo desafío: muestra las plantillas
+btnDesafio.addEventListener('click', () => {
+  menuPrincipal.hidden = true;
+  menuDesafio.hidden = false;
+});
+
+btnVolverMenu.addEventListener('click', () => {
+  menuDesafio.hidden = true;
+  menuPrincipal.hidden = false;
+});
+
+// Cada botón de plantilla crea la lista (si no existe) y entra a la ruleta
+document.querySelectorAll('[data-plantilla]').forEach(boton => {
+  boton.addEventListener('click', () => {
+    const nombre = boton.dataset.plantilla;
+    const plantilla = PLANTILLAS[nombre];
+    if (!listas[nombre]) {
+      listas[nombre] = [...plantilla.opciones];
+      guardar();
+    }
+    entrarALaRuleta(nombre);
+    if (plantilla.aviso && opciones.length === 0) {
+      resultado.textContent = plantilla.aviso;
+    }
+  });
 });
 
 btnMenu.addEventListener('click', mostrarMenu);
@@ -439,35 +487,33 @@ if ('serviceWorker' in navigator) {
 }
 
 // ---------- BOTÓN DESCARGAR / INSTALAR ----------
-// Android y computadoras (Chrome y Edge): el navegador avisa cuando la app se puede instalar
+const yaInstalada = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+const esIphone = /iPhone|iPad/.test(navigator.userAgent);
+
+// El botón se muestra mientras la app no esté instalada
+btnInstalar.hidden = yaInstalada;
+
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   eventoInstalar = e;
-  btnInstalar.hidden = false;
 });
 
 btnInstalar.addEventListener('click', async () => {
   if (eventoInstalar) {
     eventoInstalar.prompt();
-    await eventoInstalar.userChoice;
+    const respuesta = await eventoInstalar.userChoice;
+    if (respuesta.outcome === 'accepted') btnInstalar.hidden = true;
     eventoInstalar = null;
-    btnInstalar.hidden = true;
-  } else {
-    // iPhone no permite instalación automática: mostramos instrucciones
+  } else if (esIphone) {
     alert('En iPhone: toca el botón Compartir (cuadrado con flecha) y elige "Agregar a pantalla de inicio".');
+  } else {
+    alert('Para instalarla: en Chrome o Edge abre el menú (⋮ o el ícono de instalar en la barra de direcciones) y elige "Instalar app".');
   }
 });
 
 window.addEventListener('appinstalled', () => {
   btnInstalar.hidden = true;
 });
-
-// En iPhone mostramos el botón con instrucciones (si la app no está ya instalada)
-const esIphone = /iPhone|iPad/.test(navigator.userAgent);
-const yaInstalada = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-if (esIphone && !yaInstalada) {
-  btnInstalar.hidden = false;
-}
 
 // ---------- EMOJIS ANIMADOS DE FONDO ----------
 const EMOJIS_FONDO = ['😂', '😍', '🥳', '😢', '😜', '😅', '🤩', '🎉', '😎', '🤪', '😋', '👍', '❤️'];
