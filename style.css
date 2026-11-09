@@ -301,3 +301,67 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   background: rgba(255,255,255,0.25);
   color: var(--blanco);
 }
+
+/* ---------- Botón de tema (modo oscuro) ---------- */
+.encabezado .btn-tema {
+  margin-left: auto;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+}
+
+/* ---------- Confeti ---------- */
+#confeti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ---------- Botón compartir en WhatsApp ---------- */
+.btn-compartir {
+  width: 100%;
+  max-width: 280px;
+  min-height: 52px;
+  margin-top: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.btn-compartir[hidden] {
+  display: none;
+}
+
+/* ---------- Modo oscuro ---------- */
+body.oscuro {
+  background: linear-gradient(180deg, #1b2a52 0%, #0d1224 100%);
+}
+
+body.oscuro .tarjeta {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.12);
+}
+
+body.oscuro #lista li {
+  background: rgba(255,255,255,0.1);
+}
+
+body.oscuro .btn-instalar {
+  background: #1b2a52;
+  color: #fff;
+}
+
+body.oscuro .fondo-emojis span {
+  opacity: 0.5;
+}
