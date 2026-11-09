@@ -365,3 +365,101 @@ body.oscuro .btn-instalar {
 body.oscuro .fondo-emojis span {
   opacity: 0.5;
 }
+/* ---------- Acciones del encabezado ---------- */
+.acciones {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.acciones .btn-tema {
+  margin-left: 0;
+}
+
+/* ---------- Pantalla de inicio ---------- */
+.inicio {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(74,163,240,0.94), rgba(47,134,224,0.94));
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.inicio[hidden] {
+  display: none;
+}
+
+.inicio.salir {
+  opacity: 0;
+  transform: scale(1.06);
+  pointer-events: none;
+}
+
+.inicio-logo {
+  width: 130px;
+  height: 130px;
+  border-radius: 28px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+  animation: girarEntrada 1s cubic-bezier(.2,.9,.3,1.2) both;
+}
+
+.inicio-titulo {
+  margin: 6px 0 0;
+  font-size: 1.8rem;
+  text-align: center;
+  animation: subirFade 0.7s ease 0.4s backwards;
+}
+
+.inicio-sub {
+  margin: 0 0 14px;
+  opacity: 0.9;
+  text-align: center;
+  animation: subirFade 0.7s ease 0.6s backwards;
+}
+
+.inicio-botones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.btn-inicio {
+  min-height: 56px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  animation: subirFade 0.6s ease backwards;
+  animation-delay: calc(0.8s + var(--i) * 0.15s);
+}
+
+.btn-inicio-principal {
+  background: linear-gradient(135deg, var(--amarillo), #ff9f43);
+  color: #222;
+  border: none;
+}
+
+body.oscuro .inicio {
+  background: linear-gradient(180deg, rgba(27,42,82,0.95), rgba(13,18,36,0.95));
+}
+
+@keyframes girarEntrada {
+  from { transform: rotate(-360deg) scale(0.2); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+@keyframes subirFade {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
