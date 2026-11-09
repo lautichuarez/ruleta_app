@@ -11,12 +11,20 @@ const selectorLista = document.getElementById('selectorLista');
 const btnNuevaLista = document.getElementById('btnNuevaLista');
 const btnBorrarLista = document.getElementById('btnBorrarLista');
 const btnTema = document.getElementById('btnTema');
+const btnMenu = document.getElementById('btnMenu');
 const btnCompartir = document.getElementById('btnCompartir');
 const confetiCanvas = document.getElementById('confeti');
 const cctx = confetiCanvas.getContext('2d');
+const pantallaInicio = document.getElementById('pantallaInicio');
+const btnJugar = document.getElementById('btnJugar');
+const btnModoGrupo = document.getElementById('btnModoGrupo');
+const btnCompartirApp = document.getElementById('btnCompartirApp');
 
 const COLORES = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1',
                  '#ff9ff3', '#54a0ff', '#5f27cd', '#ff9f43'];
+
+const URL_APP = 'https://lautichuarez.github.io/ruleta_app/';
+const TEXTO_APP = '🎡 Mira esta app para decidir qué hacemos hoy. ¡Gira la ruleta!';
 
 // ---------- LISTAS ----------
 // Cada lista tiene un nombre y sus opciones. Si ya tenías opciones guardadas
@@ -93,6 +101,47 @@ function borrarLista() {
   delete listas[listaActual];
   cambiarLista(Object.keys(listas)[0]);
 }
+
+// ---------- MENÚ DE INICIO ----------
+function mostrarMenu() {
+  pantallaInicio.classList.remove('salir');
+  pantallaInicio.hidden = false;
+}
+
+function entrarALaRuleta(nombreLista) {
+  if (nombreLista) cambiarLista(nombreLista);
+  pantallaInicio.classList.add('salir');
+  setTimeout(() => { pantallaInicio.hidden = true; }, 500);
+}
+
+btnJugar.addEventListener('click', () => entrarALaRuleta());
+
+// Modo grupo: usa una lista "Personas" para escribir los nombres del grupo
+btnModoGrupo.addEventListener('click', () => {
+  if (!listas['Personas']) {
+    listas['Personas'] = [];
+    guardar();
+  }
+  entrarALaRuleta('Personas');
+  if (opciones.length === 0) {
+    resultado.textContent = 'Escribe los nombres del grupo';
+  }
+});
+
+btnMenu.addEventListener('click', mostrarMenu);
+
+// Compartir la app: usa el menú del celular si existe, si no abre WhatsApp
+btnCompartirApp.addEventListener('click', async () => {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '¿Qué hacemos hoy?', text: TEXTO_APP, url: URL_APP });
+    } catch (e) {
+      // El usuario canceló; no hacemos nada
+    }
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent(TEXTO_APP + '\n' + URL_APP), '_blank');
+  }
+});
 
 // ---------- MODO OSCURO ----------
 function aplicarTema(oscuro) {
@@ -330,7 +379,7 @@ function mostrarGanador() {
   }
 }
 
-// ---------- COMPARTIR EN WHATSAPP ----------
+// ---------- COMPARTIR RESULTADO EN WHATSAPP ----------
 btnCompartir.addEventListener('click', () => {
   const mensaje = `🎉 Hoy elegimos: ${ganadorActual} (lista: ${listaActual}) 🎉`;
   window.open('https://wa.me/?text=' + encodeURIComponent(mensaje), '_blank');
