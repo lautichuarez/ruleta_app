@@ -20,10 +20,20 @@
     <img src="icon-192.png" alt="" class="inicio-logo">
     <h1 class="inicio-titulo">¿Qué hacemos hoy?</h1>
     <p class="inicio-sub">Deja que la ruleta decida por ti</p>
-    <div class="inicio-botones">
+
+    <div id="menuPrincipal" class="inicio-botones">
       <button id="btnJugar" class="btn-inicio btn-inicio-principal" style="--i:0">🎡 Jugar</button>
       <button id="btnModoGrupo" class="btn-inicio" style="--i:1">👥 Modo grupo</button>
-      <button id="btnCompartirApp" class="btn-inicio" style="--i:2">📤 Compartir la app</button>
+      <button id="btnDesafio" class="btn-inicio" style="--i:2">🎲 Modo desafío</button>
+      <button id="btnCompartirApp" class="btn-inicio" style="--i:3">📤 Compartir la app</button>
+    </div>
+
+    <div id="menuDesafio" class="inicio-botones" hidden>
+      <p class="inicio-sub">Elige un desafío</p>
+      <button class="btn-inicio" data-plantilla="Qué comemos hoy" style="--i:0">🍕 ¿Qué comemos hoy?</button>
+      <button class="btn-inicio" data-plantilla="Quién paga" style="--i:1">💸 ¿Quién paga la cuenta?</button>
+      <button class="btn-inicio" data-plantilla="Previa" style="--i:2">🎉 Previa / Fiesta</button>
+      <button id="btnVolverMenu" class="btn-inicio" style="--i:3">← Volver</button>
     </div>
   </section>
 
