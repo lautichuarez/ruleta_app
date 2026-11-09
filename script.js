@@ -10,6 +10,10 @@ const contenedorFondo = document.querySelector('.fondo-emojis');
 const selectorLista = document.getElementById('selectorLista');
 const btnNuevaLista = document.getElementById('btnNuevaLista');
 const btnBorrarLista = document.getElementById('btnBorrarLista');
+const btnTema = document.getElementById('btnTema');
+const btnCompartir = document.getElementById('btnCompartir');
+const confetiCanvas = document.getElementById('confeti');
+const cctx = confetiCanvas.getContext('2d');
 
 const COLORES = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1',
                  '#ff9ff3', '#54a0ff', '#5f27cd', '#ff9f43'];
@@ -37,6 +41,7 @@ let opciones = listas[listaActual];
 let angulo = 0;   // rotación actual de la ruleta (en radianes)
 let girando = false;
 let eventoInstalar = null;
+let ganadorActual = '';
 
 function guardar() {
   localStorage.setItem('listas', JSON.stringify(listas));
@@ -60,6 +65,7 @@ function cambiarLista(nombre) {
   opciones = listas[nombre];
   guardar();
   resultado.textContent = '';
+  btnCompartir.hidden = true;
   renderizarSelector();
   renderizarLista();
   dibujar();
@@ -87,6 +93,23 @@ function borrarLista() {
   delete listas[listaActual];
   cambiarLista(Object.keys(listas)[0]);
 }
+
+// ---------- MODO OSCURO ----------
+function aplicarTema(oscuro) {
+  document.body.classList.toggle('oscuro', oscuro);
+  btnTema.textContent = oscuro ? '☀️' : '🌙';
+  localStorage.setItem('tema', oscuro ? 'oscuro' : 'claro');
+}
+
+// Si nunca lo cambiaste, usa el modo que tenga tu celular o computadora
+const temaGuardado = localStorage.getItem('tema');
+aplicarTema(temaGuardado
+  ? temaGuardado === 'oscuro'
+  : window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+btnTema.addEventListener('click', () => {
+  aplicarTema(!document.body.classList.contains('oscuro'));
+});
 
 // ---------- SONIDOS ----------
 let audioCtx = null;
@@ -128,6 +151,63 @@ function celebrar() {
   sonidoGanador.play().catch(() => {
     // Si el navegador bloquea el audio, la app sigue funcionando sin sonido
   });
+}
+
+// ---------- CONFETI ----------
+let particulas = [];
+let animacionConfeti = null;
+
+function ajustarConfeti() {
+  confetiCanvas.width = window.innerWidth;
+  confetiCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', ajustarConfeti);
+ajustarConfeti();
+
+function lanzarConfeti() {
+  ajustarConfeti();
+  particulas = [];
+  for (let i = 0; i < 140; i++) {
+    particulas.push({
+      x: confetiCanvas.width / 2 + (Math.random() - 0.5) * 60,
+      y: confetiCanvas.height * 0.35,
+      vx: (Math.random() - 0.5) * 16,
+      vy: -Math.random() * 18 - 4,
+      tam: 7 + Math.random() * 7,
+      color: COLORES[Math.floor(Math.random() * COLORES.length)],
+      rot: Math.random() * Math.PI * 2,
+      vrot: (Math.random() - 0.5) * 0.4,
+      vida: 0
+    });
+  }
+  cancelAnimationFrame(animacionConfeti);
+  animarConfeti();
+}
+
+function animarConfeti() {
+  cctx.clearRect(0, 0, confetiCanvas.width, confetiCanvas.height);
+
+  particulas.forEach(p => {
+    p.vy += 0.4;          // gravedad
+    p.vx *= 0.99;         // resistencia del aire
+    p.x += p.vx;
+    p.y += p.vy;
+    p.rot += p.vrot;
+    p.vida++;
+
+    cctx.save();
+    cctx.translate(p.x, p.y);
+    cctx.rotate(p.rot);
+    cctx.fillStyle = p.color;
+    cctx.fillRect(-p.tam / 2, -p.tam / 4, p.tam, p.tam / 2);
+    cctx.restore();
+  });
+
+  particulas = particulas.filter(p => p.y < confetiCanvas.height + 20 && p.vida < 300);
+
+  if (particulas.length > 0) {
+    animacionConfeti = requestAnimationFrame(animarConfeti);
+  }
 }
 
 // ---------- DIBUJAR LA RULETA ----------
@@ -198,6 +278,7 @@ function girar() {
 
   girando = true;
   btnGirar.disabled = true;
+  btnCompartir.hidden = true;
   resultado.classList.remove('mostrar');
   resultado.textContent = '';
 
@@ -237,14 +318,23 @@ function girar() {
 }
 
 function mostrarGanador() {
-  resultado.textContent = '🎉 ' + obtenerGanador() + ' 🎉';
+  ganadorActual = obtenerGanador();
+  resultado.textContent = '🎉 ' + ganadorActual + ' 🎉';
   resultado.classList.add('mostrar');
+  btnCompartir.hidden = false;
   celebrar();
+  lanzarConfeti();
   // Vibración: funciona en Android; en iPhone el navegador la ignora
   if ('vibrate' in navigator) {
     navigator.vibrate([200, 100, 200]);
   }
 }
+
+// ---------- COMPARTIR EN WHATSAPP ----------
+btnCompartir.addEventListener('click', () => {
+  const mensaje = `🎉 Hoy elegimos: ${ganadorActual} (lista: ${listaActual}) 🎉`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(mensaje), '_blank');
+});
 
 // ---------- GESTIONAR LA LISTA ----------
 function renderizarLista() {
