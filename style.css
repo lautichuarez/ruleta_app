@@ -463,3 +463,8 @@ body.oscuro .inicio {
   from { transform: translateY(24px); opacity: 0; }
   to   { transform: none; opacity: 1; }
 }
+
+/* ---------- Menús del inicio ---------- */
+.inicio-botones[hidden] {
+  display: none;
+}
