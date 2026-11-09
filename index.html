@@ -13,11 +13,13 @@
 </head>
 <body>
   <div class="fondo-emojis" aria-hidden="true"></div>
+  <canvas id="confeti" aria-hidden="true"></canvas>
 
   <main>
     <header class="encabezado">
       <img src="icon-192.png" alt="" class="logo">
       <h1>¿Qué hacemos hoy?</h1>
+      <button id="btnTema" class="btn-tema" title="Cambiar tema">🌙</button>
     </header>
 
     <button id="btnInstalar" class="btn-instalar" hidden>📲 Descargar app</button>
@@ -35,6 +37,7 @@
       </div>
       <button id="btnGirar" class="btn-girar">¡Girar!</button>
       <p id="resultado" class="resultado"></p>
+      <button id="btnCompartir" class="btn-compartir" hidden>📲 Compartir en WhatsApp</button>
     </section>
 
     <section class="tarjeta">
